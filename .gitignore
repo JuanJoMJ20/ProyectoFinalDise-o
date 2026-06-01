@@ -1,0 +1,29 @@
+# Spring Boot / Java
+fittrack-backend/target/
+fittrack-backend/bin/
+fittrack-backend/.settings/
+fittrack-backend/.classpath
+fittrack-backend/.project
+*.class
+*.jar
+*.war
+*.ear
+.mvn/
+!fittrack-backend/.mvn/wrapper/maven-wrapper.jar
+
+# Frontend / Node
+fittrack-frontend/node_modules/
+fittrack-frontend/dist/
+fittrack-frontend/dist-ssr/
+fittrack-frontend/*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
