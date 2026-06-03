@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { obtenerUsuarios, actualizarProgreso, asignarRutina } from '../services/usuarioService';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -48,6 +51,39 @@ const Dashboard = () => {
     }
   };
 
+  const exportarPDF = (usuario) => {
+    const doc = new jsPDF();
+    doc.setFillColor(15, 23, 42); // Fondo slate-900
+    doc.rect(0, 0, 210, 297, 'F');
+    
+    doc.setTextColor(52, 211, 153); // Texto emerald-400
+    doc.setFontSize(22);
+    doc.text(`FitTrack Pro - Reporte Deportivo`, 20, 20);
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.text(`Atleta: ${usuario.nombre}`, 20, 40);
+    doc.text(`Suscripción: ${usuario.suscripcionActiva ? 'PRO Activa' : 'Vencida'}`, 20, 50);
+    doc.text(`Peso Actual: ${usuario.pesoActual} kg`, 20, 60);
+    doc.text(`Meta de Peso: ${usuario.metaPeso} kg`, 20, 70);
+
+    doc.autoTable({
+      startY: 90,
+      head: [['Día', 'Ejercicio', 'Series', 'Repeticiones']],
+      body: [
+        ['Lunes', 'Press de Banca', '4', '10-12'],
+        ['Martes', 'Sentadilla Libre', '4', '8-10'],
+        ['Miércoles', 'Descanso Activo', '-', '-'],
+        ['Jueves', 'Dominadas', '4', 'Al fallo'],
+        ['Viernes', 'Peso Muerto', '3', '6-8']
+      ],
+      headStyles: { fillColor: [16, 185, 129] }, // emerald-500
+      theme: 'grid'
+    });
+
+    doc.save(`Rutina_${usuario.nombre.replace(/\s+/g, '_')}.pdf`);
+  };
+
   if (loading) return <div className="text-white text-center mt-20 text-xl">Cargando tu progreso...</div>;
   if (error) return <div className="text-red-500 text-center mt-20 text-xl font-bold">{error}</div>;
 
@@ -75,6 +111,23 @@ const Dashboard = () => {
       </header>
 
       <main>
+        {usuarios.length > 0 && (
+          <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700 mb-8 h-[350px]">
+            <h3 className="text-xl font-bold text-emerald-400 mb-6">Progreso Global de Atletas (Peso Actual vs Meta)</h3>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={usuarios}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="nombre" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#fff' }} />
+                <Legend />
+                <Bar dataKey="pesoActual" name="Peso Actual (kg)" fill="#34d399" />
+                <Bar dataKey="metaPeso" name="Meta (kg)" fill="#94a3b8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
         <h2 className="text-2xl font-bold mb-6">Atletas Activos</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {usuarios.map((usuario) => (
@@ -100,18 +153,26 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-700 flex gap-2">
+              <div className="mt-6 pt-4 border-t border-slate-700 flex flex-col gap-2">
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => handleActualizarPeso(usuario.id, usuario.pesoActual)}
+                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-xs py-2 rounded text-slate-200 transition-colors"
+                  >
+                    Modificar Peso
+                  </button>
+                  <button 
+                    onClick={() => handleAsignarRutina(usuario.id)}
+                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-xs py-2 rounded text-slate-200 transition-colors"
+                  >
+                    Asignar Rutina
+                  </button>
+                </div>
                 <button 
-                  onClick={() => handleActualizarPeso(usuario.id, usuario.pesoActual)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-xs py-2 rounded text-slate-200 transition-colors"
+                  onClick={() => exportarPDF(usuario)}
+                  className="w-full bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-400 border border-emerald-500/50 text-xs py-2 rounded transition-colors mt-2 font-bold"
                 >
-                  Modificar Peso
-                </button>
-                <button 
-                  onClick={() => handleAsignarRutina(usuario.id)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-xs py-2 rounded text-slate-200 transition-colors"
-                >
-                  Asignar Rutina
+                  📄 Descargar Rutina (PDF)
                 </button>
               </div>
             </div>
