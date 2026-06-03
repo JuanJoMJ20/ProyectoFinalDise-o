@@ -34,12 +34,18 @@ public class UsuarioMapper {
 
         boolean suscripcionActiva = usuario.getSuscripcion() != null && usuario.getSuscripcion().estaActiva();
 
+        String rutinaActual = "Sin rutina asignada";
+        if (usuario.getPlanesEntrenamiento() != null && !usuario.getPlanesEntrenamiento().isEmpty()) {
+            rutinaActual = usuario.getPlanesEntrenamiento().get(usuario.getPlanesEntrenamiento().size() - 1).getNivel();
+        }
+
         return UsuarioResponseDTO.builder()
                 .id(usuario.getId())
                 .nombre(usuario.getNombre())
                 .pesoActual(usuario.getPesoActual())
                 .metaPeso(usuario.getMetaPeso())
                 .suscripcionActiva(suscripcionActiva)
+                .rutinaActual(rutinaActual)
                 .build();
     }
 }

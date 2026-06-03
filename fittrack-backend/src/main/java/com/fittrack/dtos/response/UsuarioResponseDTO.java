@@ -16,5 +16,6 @@ public class UsuarioResponseDTO {
     private float pesoActual;
     private float metaPeso;
     private boolean suscripcionActiva;
+    private String rutinaActual;
 
 }

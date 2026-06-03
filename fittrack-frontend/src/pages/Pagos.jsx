@@ -8,7 +8,7 @@ const Pagos = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [formData, setFormData] = useState({
     usuarioId: '',
-    monto: '29.99',
+    monto: '120000',
     metodoPago: 'Tarjeta de Credito'
   });
   const [error, setError] = useState('');
@@ -92,27 +92,32 @@ const Pagos = () => {
                   onChange={handleChange}
                   className="block w-full px-3 py-2 border border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-slate-900 text-white"
                 >
-                  {usuarios.map(u => (
-                    <option key={u.id} value={u.id}>{u.nombre} - Suscripción: {u.suscripcionActiva ? 'Activa' : 'Vencida'}</option>
+                  <option value="">Seleccione un atleta...</option>
+                  {usuarios.filter(u => !u.suscripcionActiva).map(u => (
+                    <option key={u.id} value={u.id}>{u.nombre} - Suscripción Vencida</option>
                   ))}
+                  {usuarios.filter(u => !u.suscripcionActiva).length === 0 && (
+                    <option value="" disabled>Todos los atletas están al día</option>
+                  )}
                 </select>
               </div>
             </div>
 
             <div>
               <label htmlFor="monto" className="block text-sm font-medium text-slate-300">
-                Monto (USD)
+                Plan a renovar (COP)
               </label>
               <div className="mt-1">
-                <input
+                <select
                   id="monto"
                   name="monto"
-                  type="number"
-                  step="0.01"
                   value={formData.monto}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-slate-900 text-white"
-                />
+                  className="block w-full px-3 py-2 border border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-slate-900 text-white"
+                >
+                  <option value="120000">PRO - 120.000 COP</option>
+                  <option value="100000">Basic - 100.000 COP</option>
+                </select>
               </div>
             </div>
 

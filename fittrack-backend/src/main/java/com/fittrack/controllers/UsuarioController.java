@@ -42,4 +42,10 @@ public class UsuarioController {
         boolean activa = usuarioService.tieneSuscripcionActiva(id);
         return ResponseEntity.ok(activa);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+        usuarioService.eliminarUsuario(id);
+        return ResponseEntity.noContent().build();
+    }
 }

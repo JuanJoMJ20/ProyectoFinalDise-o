@@ -26,43 +26,43 @@ public class DatabaseSeeder implements CommandLineRunner {
         @Transactional
         public void run(String... args) throws Exception {
                 log.info("Iniciando carga de datos de prueba (Seeding)...");
+                
+                // Limpiar plantillas anteriores
+                List<PlanEntrenamiento> plantillas = planEntrenamientoRepository.findAll().stream()
+                        .filter(p -> p.getUsuario() == null)
+                        .toList();
+                if (!plantillas.isEmpty()) {
+                        planEntrenamientoRepository.deleteAll(plantillas);
+                }
 
-                if (planEntrenamientoRepository.count() == 0 && usuarioRepository.count() == 0) {
-                        PlanEntrenamiento plan1 = PlanEntrenamiento.builder()
-                                        .nivel("Principiante")
-                                        .enfoque("Pérdida de peso y cardio")
-                                        .build();
-                        PlanEntrenamiento plan2 = PlanEntrenamiento.builder()
-                                        .nivel("Avanzado")
-                                        .enfoque("Hipertrofia y fuerza")
-                                        .build();
-                        PlanEntrenamiento planHipertrofia = PlanEntrenamiento.builder()
-                                        .nivel("Intermedio/Avanzado")
-                                        .enfoque("Ganancia de volumen, masa muscular y dosificación de 5g de creatina")
-                                        .build();
+                // Crear los nuevos planes base (Plantillas)
+                PlanEntrenamiento plan1 = PlanEntrenamiento.builder()
+                                .nivel("Pérdida de peso y cardio")
+                                .enfoque("Quema de grasa, resistencia cardiovascular")
+                                .build();
+                PlanEntrenamiento plan2 = PlanEntrenamiento.builder()
+                                .nivel("Hipertrofia, fuerza y ganancia muscular")
+                                .enfoque("Aumento de volumen y 5g de creatina")
+                                .build();
+                PlanEntrenamiento planHipertrofia = PlanEntrenamiento.builder()
+                                .nivel("Personalizado")
+                                .enfoque("Adaptado a las necesidades específicas del atleta")
+                                .build();
 
-                        planEntrenamientoRepository.saveAll(List.of(plan1, plan2, planHipertrofia));
-                        log.info("Planes de entrenamiento creados.");
+                planEntrenamientoRepository.saveAll(List.of(plan1, plan2, planHipertrofia));
+                log.info("Nuevos planes de entrenamiento (Plantillas) actualizados y creados.");
 
+                if (usuarioRepository.count() == 0) {
                         Usuario usuario = Usuario.builder()
                                         .nombre("Juan Jo")
                                         .pesoActual(73.0f)
                                         .metaPeso(80.0f)
-                                        // Fecha de nacimiento aproximada (Ej. hace 25 años)
                                         .fechaNacimiento(new Date(System.currentTimeMillis() - 788400000000L))
                                         .planesEntrenamiento(new ArrayList<>())
                                         .build();
 
                         usuario = usuarioRepository.save(usuario);
                         log.info("Usuario de prueba 'Juan Jo' creado.");
-
-                        // Asignar el Plan Hipertrofia al usuario
-                        planHipertrofia.setUsuario(usuario);
-                        planEntrenamientoRepository.save(planHipertrofia);
-                        usuario.getPlanesEntrenamiento().add(planHipertrofia);
-                        usuarioRepository.save(usuario);
-
-                        log.info("Plan Hipertrofia asignado a Juan Jo.");
                 }
 
                 log.info("Carga de datos finalizada.");

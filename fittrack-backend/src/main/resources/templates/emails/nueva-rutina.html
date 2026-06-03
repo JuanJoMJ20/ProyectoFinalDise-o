@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>FitTrack Pro - Nueva Rutina Asignada</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 20px;">
+    <div style="background-color: #1e293b; border-radius: 10px; padding: 30px; max-width: 600px; margin: 0 auto; border: 1px solid #334155;">
+        <h2 style="color: #34d399; margin-bottom: 20px;">¡Nueva Rutina Asignada, <span th:text="${nombre}">Usuario</span>! 🏋️‍♂️</h2>
+        <p style="font-size: 16px; line-height: 1.5; color: #cbd5e1;">Tu entrenador ha actualizado tu plan de entrenamiento en FitTrack Pro.</p>
+        
+        <div style="background-color: #0f172a; padding: 15px; border-left: 4px solid #34d399; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Nivel del Plan:</strong> <span th:text="${nivel}">Nivel</span></p>
+            <p style="margin: 5px 0;"><strong>Enfoque principal:</strong> <span th:text="${enfoque}">Enfoque</span></p>
+        </div>
+        
+        <p style="font-size: 14px; color: #94a3b8; margin-top: 30px;">
+            Inicia sesión en tu app para revisar los detalles completos. <br>
+            ¡A darlo todo! 💪
+        </p>
+    </div>
+</body>
+</html>

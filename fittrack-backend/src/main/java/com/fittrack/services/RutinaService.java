@@ -28,20 +28,31 @@ public class RutinaService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + usuarioId));
 
-        PlanEntrenamiento plan = planEntrenamientoRepository.findById(planId)
+        PlanEntrenamiento planOriginal = planEntrenamientoRepository.findById(planId)
                 .orElseThrow(() -> new ResourceNotFoundException("Plan de entrenamiento no encontrado con ID: " + planId));
 
-        // Asignar la relación (El PlanEntrenamiento es el dueño de la relación en nuestro modelo)
-        plan.setUsuario(usuario);
-        planEntrenamientoRepository.save(plan);
+        // Hacemos una copia para asignarla al usuario y que no borre el template original
+        PlanEntrenamiento planAsignado = PlanEntrenamiento.builder()
+                .nivel(planOriginal.getNivel())
+                .enfoque(planOriginal.getEnfoque())
+                .usuario(usuario)
+                .build();
+        
+        // Limpiar planes anteriores para que no se acumulen
+        if (usuario.getPlanesEntrenamiento() != null && !usuario.getPlanesEntrenamiento().isEmpty()) {
+            planEntrenamientoRepository.deleteAll(usuario.getPlanesEntrenamiento());
+            usuario.getPlanesEntrenamiento().clear();
+        }
+        
+        planEntrenamientoRepository.save(planAsignado);
 
         // Opcionalmente podemos agregarlo a la lista de usuario
         if (usuario.getPlanesEntrenamiento() != null) {
-            usuario.getPlanesEntrenamiento().add(plan);
+            usuario.getPlanesEntrenamiento().add(planAsignado);
         }
 
         // Emitir evento
-        eventPublisher.publishEvent(new NuevaRutinaEvent(this, usuario, plan));
+        eventPublisher.publishEvent(new NuevaRutinaEvent(this, usuario, planAsignado));
 
         return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
     }

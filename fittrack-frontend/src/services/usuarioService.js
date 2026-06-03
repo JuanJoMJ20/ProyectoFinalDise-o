@@ -19,3 +19,13 @@ export const asignarRutina = async (usuarioId, planId) => {
   const response = await api.post(`/usuarios/${usuarioId}/rutinas`, { planId });
   return response.data;
 };
+
+export const eliminarUsuario = async (usuarioId) => {
+  const response = await api.delete(`/usuarios/${usuarioId}`);
+  return response.data;
+};
+
+export const obtenerPlanes = async () => {
+  const response = await api.get('/planes');
+  return response.data;
+};
